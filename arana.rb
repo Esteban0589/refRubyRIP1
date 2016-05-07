@@ -10,20 +10,39 @@ spider.Initialize("www.metrolyrics.com")
 #  Add the 1st URL:
 spider.AddUnspidered("http://www.metrolyrics.com/")
 
-spider.AddMustMatchPattern("*-lyrics-*")
-spider.AddAvoidPattern("*-lyrics.html")
-spider.AddMustMatchPattern("*.html")
-spider.AddAvoidPattern("*-discussions-*")
+# spider.AddMustMatchPattern("*-lyrics-*")
+# spider.AddAvoidPattern("*-lyrics.html")
+# spider.AddAvoidPattern("*-discussions-*")
+# spider.AddAvoidPattern("*news-story*")
+# spider.AddAvoidPattern("*printlyric*")
 
 #  Begin crawling the site by calling CrawlNext repeatedly.
+output = File.open( "outputfile.txt","w" )
+#Buscara en 1000paginas
 
-for i in 0 .. 500
+i=0
+while (i<500)
 
     success = spider.CrawlNext()
     if (success == true)
-        #  Show the URL of the page just spidered.
-        print spider.lastUrl() + "\n";
-        #  The HTML is available in the LastHtml property
+        #este if verificara que la url tenga el patron de las paginas con letra de canciones
+        if(
+            #el patron es nombre pag/nombrecancion-lyrics-autor.html
+            (/(.*)-lyrics-(.*)/ =~ spider.lastUrl())&& 
+            # (/(.*)(html$)/ =~ spider.lastUrl())&& #Este creo q va comentado porque creo q no importa que terminen en html.*
+            #debe evitar los casos de abajop porque parecen cumplir el criterio pero no son paginas de letras de canciones.
+            (/(.*)(discussions)(.*)/ !~ spider.lastUrl())&&
+            (/(.*)(news-story)(.*)/ !~ spider.lastUrl())&&
+            (/(.*)(news-gallery)(.*)/ !~ spider.lastUrl())&&
+            (/(.*)(printlyric)(.*)/ !~ spider.lastUrl())
+            )
+            #  Show the URL of the page just spidered.
+            i=i+1
+            output << i
+            output <<  " "
+            output << spider.lastUrl() + "\n";
+        end
+    #  The HTML is available in the LastHtml property
     else
         #  Did we get an error or are there no more URLs to crawl?
         if (spider.get_NumUnspidered() == 0)
@@ -37,3 +56,4 @@ for i in 0 .. 500
     #  Sleep 1 second before spidering the next URL.
     spider.SleepMs(1)
 end
+output.close
