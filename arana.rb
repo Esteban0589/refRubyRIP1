@@ -1,4 +1,7 @@
 require 'chilkat'
+require 'rubygems'
+require 'nokogiri'   
+require 'open-uri'
 
 spider = Chilkat::CkSpider.new()
 
@@ -21,7 +24,7 @@ output = File.open( "outputfile.txt","w" )
 #Buscara en 1000paginas
 
 i=0
-while (i<500)
+while (i<3)
 
     success = spider.CrawlNext()
     if (success == true)
@@ -39,8 +42,32 @@ while (i<500)
             #  Show the URL of the page just spidered.
             i=i+1
             output << i
-            output <<  " "
+            output <<  "\n"
+            
             output << spider.lastUrl() + "\n";
+
+            autor = Nokogiri::HTML(spider.lastHtml()).css("h2").map {|h2| h2.content}
+            output << autor[0].sub!(" Lyrics", "")
+            
+            titulo = Nokogiri::HTML(spider.lastHtml()).css("header h1").map {|header| header.content}
+            output << titulo[0].sub!(" Lyrics", "") + "\n";
+            
+            # lyric = Nokogiri::HTML(spider.lastHtml()).css("div#lyrics-body-text").map {|div| div.content}
+            # output << lyric[0] + "\n";
+            lyric = Nokogiri::HTML(spider.lastHtml()).css("div#lyrics-body-text p.verse").map {|div| div.content}
+            print (lyric.join("\n"))
+            print "\n"
+            print "\n"
+           # lyric.sub!("\\n", "\n")
+            
+            output << (lyric.join("\n"))
+
+            output <<  "\n"
+            output <<  "\n"
+            
+            
+            
+            
         end
     #  The HTML is available in the LastHtml property
     else
