@@ -50,14 +50,14 @@ while (i<3)
             output << autor[0].sub!(" Lyrics", "")
             
             titulo = Nokogiri::HTML(spider.lastHtml()).css("header h1").map {|header| header.content}
-            output << titulo[0].sub!(" Lyrics", "") + "\n";
+            output << titulo[0].sub!(" Lyrics", "") ;
             
             # lyric = Nokogiri::HTML(spider.lastHtml()).css("div#lyrics-body-text").map {|div| div.content}
             # output << lyric[0] + "\n";
             lyric = Nokogiri::HTML(spider.lastHtml()).css("div#lyrics-body-text p.verse").map {|div| div.content}
-            print (lyric.join("\n"))
-            print "\n"
-            print "\n"
+            # print (lyric.join("\n"))
+            # print "\n"
+            # print "\n"
            # lyric.sub!("\\n", "\n")
             
             output << (lyric.join("\n"))
